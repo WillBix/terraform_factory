@@ -1,3 +1,3 @@
 docker build -t bix-terraform-image:task1 .
 
-docker run -dit --name bix-terraform -v /home/Documents/terraform_factory:/terraform_factory bix-terraform-image:task1 /bin/bash
+docker run -dit --name bix-terraform -v /home/falcon/Documents/terraform_factory/:/terraform_factory bix-terraform-image:task1 /bin/bash
