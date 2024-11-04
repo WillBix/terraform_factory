@@ -9,7 +9,7 @@ resource "aws_security_group" "airflow_sg" {
   ingress {
     description = "Inbound Rule"
     from_port   = 22
-    to_port     = 80
+    to_port     = 22
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"] # Acesso SSH aberto
   }
@@ -29,14 +29,6 @@ resource "aws_security_group" "airflow_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  egress {
-    description = "Outbound Rule"
-    from_port = 0
-    to_port = 65535
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 }
 
 resource "aws_instance" "airflow_instance" {
@@ -45,41 +37,18 @@ resource "aws_instance" "airflow_instance" {
   key_name        = var.key_name
   security_groups = [aws_security_group.airflow_sg.name]
 
-  # Script de inicialização para instalar o Airflow
-  user_data = <<-EOF
-              #!/bin/bash
-              sudo yum update -y
-              sudo yum install -y python3 python3-pip
-              pip3 install apache-airflow
-              airflow db init
-              sudo mkdir -p /home/ec2-user/airflow/dags
-              sudo chown -R ec2-user:ec2-user /home/ec2-user/airflow/dags
-              EOF
+  # Lê o conteúdo do arquivo init-airflow.sh e o coloca no user_data
+  user_data = file("scripts/init-airflow.sh")
 
-  # Provisioner para configurar permissões e iniciar o Airflow
-  provisioner "remote-exec" {
-    inline = [
-      "sudo mkdir -p /home/ec2-user/airflow/dags",
-      "sudo cp -r /home/ec2-user/airflow/dags/* terraform_factory/task1/dags/",
-      "nohup airflow webserver --port 8080 &",
-      "nohup airflow scheduler &"
-    ]
-
-    # Configuração de conexão sem referência direta ao `public_ip`
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = file("bix_kp.pem")
-      host        = self.public_ip  # evitar referência cíclica
-    }
+  tags = {
+    Name = "Airflow-EC2-Instance"
   }
 
-  # Provisioner para copiar o diretório de DAGs
+  # Provisioners para configurar o Airflow e copiar DAGs, se necessário
   provisioner "file" {
     source      = "/terraform_factory/task1/dags/" # Diretório local com DAGs
     destination = "/home/ec2-user/airflow/dags"    # Destino na instância EC2
 
-    # Configuração de conexão sem referência direta ao `public_ip`
     connection {
       type        = "ssh"
       user        = "ec2-user"
@@ -88,7 +57,18 @@ resource "aws_instance" "airflow_instance" {
     }
   }
 
-  tags = {
-    Name = "Airflow-EC2-Instance"
+  provisioner "remote-exec" {
+    inline = [
+      "sudo chown -R ec2-user:ec2-user /home/ec2-user/airflow/dags",
+      "nohup airflow webserver --port 8080 &",
+      "nohup airflow scheduler &"
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = file("bix_kp.pem")
+      host        = self.public_ip  # evitar referência cíclica
+    }
   }
 }
