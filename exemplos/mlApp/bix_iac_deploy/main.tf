@@ -1,8 +1,7 @@
 # Conecta no provedor
 provider "aws" {
-  region = "us-east-2"  # Define a região onde os recursos da AWS serão criados (us-east-2)
+  region = var.region  # Define a região onde os recursos da AWS serão criados (us-east-2)
 }
-
 
 # Configuração do S3 para armazenar os arquivos da aplicação
 
@@ -26,8 +25,11 @@ resource "aws_s3_bucket" "bix_bucket_flask" {
 
 # Subindo o servidor no EC2
 resource "aws_instance" "bix_ml_api" {
-  ami = "ami-0a0d9cf81c479446a"  # AMI (Imagem da Máquina Virtual) para a instância EC2
-  instance_type = "t2.micro"  # Tipo da instância EC2, no caso 't2.micro'
+
+  count = var.create_instance ? var.instance_count : 0
+
+  ami = var.ami  # AMI (Imagem da Máquina Virtual) para a instância EC2
+  instance_type = var.instance_type  # Tipo da instância EC2, no caso 't2.micro'
 
   iam_instance_profile = aws_iam_instance_profile.ec2_s3_profile.name  # Associa um perfil IAM à instância EC2 para permitir acesso ao S3
 
@@ -46,7 +48,7 @@ resource "aws_instance" "bix_ml_api" {
               EOF
 
   tags = {
-    Name = "bixFlaskApp"  # Nome da instância EC2 para fácil identificação
+    Name = "bixFlaskApp-${count.index}"  # Nome da instância EC2 para fácil identificação
   }
 }
 
@@ -71,6 +73,7 @@ resource "aws_security_group" "bix_ml_api_sg" {
     cidr_blocks = ["0.0.0.0/0"]  
   }
 
+  # Acessar o EC2 via web
   ingress {
     description = "Inbound Rule 3"  # Regra de entrada para permitir SSH (porta 22)
     from_port   = 22
@@ -106,7 +109,7 @@ resource "aws_iam_role" "ec2_s3_access_role" {
   })
 }
 
-# Política do S3
+# Política do S3 - Permissões
 resource "aws_iam_role_policy" "s3_access_policy" {
   name = "s3_access_policy"
   role = aws_iam_role.ec2_s3_access_role.id 
