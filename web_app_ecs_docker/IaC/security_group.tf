@@ -10,6 +10,9 @@ module "container-security-group" {
   vpc_id = module.vpc.vpc_id
 
   # Configura regras de ingress e egress para o Security Group
+  # Da pra incluir até nuvem-hibrida: Monta uma rede como se fosse unica, mas um recurso está na nuvem e eoutro local
+  ## Por exemplo: Somente um endereço IP da empresa acessa a nuvem, fora da rede da empresa, na consegue.
+
   ingress_with_cidr_blocks = [
     {
       from_port   = var.container_port
@@ -20,6 +23,7 @@ module "container-security-group" {
     }
   ]
 
+  # Por onde a AWS pode responder?
   egress_rules = ["all-all"]
 
   # Tag para o Security Group
