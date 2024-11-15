@@ -1,1 +1,0 @@
-ws s3 cp /web_app_ecs_docker/IaC/vars.env s3://bix-task-182399724833/ --recursive

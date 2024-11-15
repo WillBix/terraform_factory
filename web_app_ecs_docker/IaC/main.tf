@@ -17,7 +17,7 @@ resource "aws_ecs_task_definition" "ecs-task" {
   cpu                      = var.cpu    # Unidades de CPU para a tarefa
   memory                   = var.memory # Memória em MB para a tarefa
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-task_role_arn              = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn              = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([
     {
@@ -37,7 +37,7 @@ task_role_arn              = aws_iam_role.ecs_task_execution_role.arn
       # Adicionar arquivo de variáveis de ambiente do S3
       environmentFiles = [
         {
-          value = aws_s3_bucket.bix_bucket_ecs.arn,
+          value = "arn:aws:s3:::${aws_s3_bucket.bix_bucket_ecs.bucket}/${aws_s3_object.vars_env.key}"
           type  = "s3"
         }
       ],
@@ -130,7 +130,7 @@ resource "aws_s3_bucket" "bix_bucket_ecs" {
 
   provisioner "local-exec" {
     when    = destroy  # Esse provisioner é executado quando o recurso é destruído
-    command = "aws s3 rm s3://bix-182399724833-bucket --recursive"  # Remove todos os arquivos do bucket ao destruir o recurso
+    command = "aws s3 rm s3://bix-task-182399724833 --recursive"  # Remove todos os arquivos do bucket ao destruir o recurso
   }
 }
 
