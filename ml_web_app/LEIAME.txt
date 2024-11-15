@@ -1,7 +1,3 @@
-
-
-
-
 # Execute o comando abaixo para criar a imagem Docker
 
 docker build -t bix-terraform-image:exemplos_iac .
