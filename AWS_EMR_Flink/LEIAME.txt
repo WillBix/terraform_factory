@@ -1,11 +1,12 @@
+
 # Execute o comando abaixo para criar a imagem Docker
 
-docker build -t bix-terraform-image:exemplos_iac .
+docker build -t bix-terraform-image:p1 .
 
 
 # Execute o comando abaixo para criar o container Docker
 
-docker run -dit --name bix_exemplos_iac -v ./ml_web_app:/ml_web_app bix-terraform-image:exemplos_iac /bin/bash
+docker run -dit --name bix-p1 -v ./AWS_EMR_Flink:/AWS_EMR_Flink bix-terraform-image:p1 /bin/bash
 
 
 # Verifique as versões do Terraform e do AWS CLI com os comandos abaixo
