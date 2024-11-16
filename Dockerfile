@@ -17,8 +17,8 @@ RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform
     rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 
 # Criar a pasta /exemplos como um ponto de montagem para um volume
-RUN mkdir /web_app_ecs_docker
-VOLUME /web_app_ecs_docker
+RUN mkdir /terraform_factory
+VOLUME /terraform_factory
 
 # Criar a pasta Downloads e instalar o AWS CLI (para acessar a AWS)
 RUN mkdir Downloads && \
