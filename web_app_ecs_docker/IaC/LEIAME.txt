@@ -1,0 +1,14 @@
+# Execute o comando abaixo para criar a imagem Docker
+
+docker build -t bix-terraform-image:exemplos_iac .
+
+
+# Execute o comando abaixo para criar o container Docker
+
+docker run -dit --name bix_exemplos_iac -v ./web_app_ecs_docker:/web_app_ecs_docker bix-terraform-image:exemplos_iac /bin/bash
+
+
+# Verifique as versões do Terraform e do AWS CLI com os comandos abaixo
+
+terraform version
+aws --version
