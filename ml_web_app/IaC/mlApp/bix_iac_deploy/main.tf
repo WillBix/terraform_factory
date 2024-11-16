@@ -6,7 +6,7 @@ provider "aws" {
 # Configuração do S3 para armazenar os arquivos da aplicação
 
 resource "aws_s3_bucket" "bix_bucket_flask" {
-  bucket = "bix-182399724833-bucket"  # Nome do bucket S3 a ser criado
+  bucket = "bix-182399724833-bucket"  # Nome do bucket S3 a ser criado (Esse nome se refere ao id da conta de quem criou o script, altere o ID)
 
   tags = {
     Name        = "BIX Bucket"        # Adiciona a tag 'Name' para identificação do bucket
