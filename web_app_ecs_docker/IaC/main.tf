@@ -121,7 +121,7 @@ resource "aws_lb_listener" "ecs-listener" {
 }
 
 resource "aws_s3_bucket" "bix_bucket_ecs" {
-  bucket = "bix-task-182399724833"  # Nome do bucket S3 a ser criado (Esse nome se refere ao id da conta de quem criou o script, altere o ID)
+  bucket = "bix-task-seu-id-aws>"  # Nome do bucket S3 a ser criado (Esse nome se refere ao id da conta de quem criou o script, altere o ID)
 
   tags = {
     Name        = "BIX Bucket"        # Adiciona a tag 'Name' para identificação do bucket
@@ -130,7 +130,7 @@ resource "aws_s3_bucket" "bix_bucket_ecs" {
 
   provisioner "local-exec" {
     when    = destroy  # Esse provisioner é executado quando o recurso é destruído
-    command = "aws s3 rm s3://bix-task-182399724833 --recursive"  # Remove todos os arquivos do bucket ao destruir o recurso
+    command = "aws s3 rm s3://bix-task-<seu-id-aws> --recursive"  # Remove todos os arquivos do bucket ao destruir o recurso
   }
 }
 
